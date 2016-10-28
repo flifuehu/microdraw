@@ -1,0 +1,3 @@
+drawingTools = ["select", "draw", "draw-polygon", "simplify", "addpoint",
+                  "delpoint", "addregion", "delregion", "splitregion", "rotate",
+                  "flip", "handle", "save", "copy", "paste", "delete"];

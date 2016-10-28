@@ -36,17 +36,17 @@ if(isset($_GET["action"]))
 }
 function user_check()
 {
-    if($_SESSION['LoggedIn']==1)
+    if(isset($_SESSION['LoggedIn']) and $_SESSION['LoggedIn']==1)
         echo '{"response":"Yes", "username":"'.$_SESSION['Username'].'"}';
     else
 	    echo '{"response":"No"}';
 }
 function user_login()
 {
-    global $connection;
+    global $connection, $dblogin;
     $username = mysqli_real_escape_string($connection,$_GET['username']);
     $password = md5(mysqli_real_escape_string($connection,$_GET['password']));
-    
+
     $query="SELECT * FROM ".$dblogin.".Users WHERE Username = '".$username."' AND Password = '".$password."'";
     $checklogin = mysqli_query($connection,$query);
     if(mysqli_num_rows($checklogin) == 1)
@@ -64,6 +64,7 @@ function user_login()
 function user_register()
 {
 	global $connection;
+	global $dblogin;
 	$username = mysqli_real_escape_string($connection,$_GET['username']);
 	$password = md5(mysqli_real_escape_string($connection,$_GET['password']));
 	$email = mysqli_real_escape_string($connection,$_GET['email']);
@@ -95,7 +96,7 @@ function user_remind()
 {
 	global $connection;
 	$flagFound=0;
-	
+
 	$email = mysqli_real_escape_string($connection,$_GET['email+name']);
 	$checklogin = mysqli_query($connection,"SELECT * FROM ".$dblogin.".Users WHERE EmailAddress = '".$email."'");
 	if(mysqli_num_rows($checklogin)==0)
@@ -109,7 +110,7 @@ function user_remind()
 		$row = mysqli_fetch_array($checklogin);
 		$username = $row['Username'];
 		$email = $row['EmailAddress'];
-		
+
 		// Generate password
 		$length=16;
 		$password="";
@@ -119,7 +120,7 @@ function user_remind()
 			$index = rand(0, $count - 1);
 			$password .= mb_substr($chars, $index, 1);
 		}
-	
+
 		$message = "Dear ".$username.", your new password is: ".$password;
 		mail($email, 'BrainSpell password', $message);
 
