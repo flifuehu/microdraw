@@ -34,10 +34,24 @@ function save($args)
 
 	header("Access-Control-Allow-Origin: *");
 
-	$q="INSERT INTO ".$dbname.".KeyValue (myOrigin, myKey, myValue) VALUES('"
+	//file_put_contents('./test_microDraw.txt', serialize($args));
+
+	$origin = json_decode($args['origin']);
+	$slice = $origin->slice;
+	$source = str_replace('images/', '', $origin->source);
+	$user = (is_string($origin->user) == true) ? $origin->user : $origin->user->IP;
+
+	$value = json_decode($args['value']);
+	$sliceName = str_replace('http://ffuentes.medlab.upv.es/webseg_fran_github/images/', '', $value->Regions[0]->filename);
+
+	$q="INSERT INTO ".$dbname.".KeyValue (myOrigin, myKey, myValue, mySlice, mySliceName, mySource, myUser) VALUES('"
 		.$args["origin"]."','"
 		.$args["key"]."','"
-		.mysqli_real_escape_string($connection,$args["value"])."')";
+		.mysqli_real_escape_string($connection,$args["value"])."',"
+		.$slice.",'"
+		.mysqli_real_escape_string($connection,$sliceName)."','"
+		.mysqli_real_escape_string($connection,$source)."','"
+		.mysqli_real_escape_string($connection,$user)."')";
 	$result = mysqli_query($connection,$q);
 
 	header('Content-Type: application/json');
