@@ -360,7 +360,7 @@ function updateRegionList() {
 }
 
 function checkRegionSize(reg) {
-    if( reg.path.length > 3 ) {
+    if( reg.path.length > 0 ) { // 0 before
         return;
     }
     else {
@@ -1995,7 +1995,8 @@ function initMicrodraw2(obj) {
     }
 
 	// init slider that can be used to change between slides
-	initSlider(0, obj.tileSources.length, 1, Math.round(obj.tileSources.length / 2));
+	// initSlider(0, obj.tileSources.length, 1, Math.round(obj.tileSources.length / 2));
+	initSlider(0, obj.tileSources.length, 1, 0);
 	currentImage = imageOrder[Math.floor(obj.tileSources.length / 2)];
 
 	params.tileSources = obj.tileSources;
