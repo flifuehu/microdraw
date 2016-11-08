@@ -1,6 +1,6 @@
 <?php
 
-$rootdir = "/webseg_fran_github";
+$rootdir = "/webseg";
 
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
