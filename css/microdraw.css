@@ -218,3 +218,13 @@ html,body {
     filter: drop-shadow( 2px 2px 2px #777 );
     z-index:1;
 }
+
+#logo_cvblab {
+	position:absolute;
+	bottom:10px;
+	right:55px;
+    -webkit-filter: drop-shadow( 2px 2px 2px #777 );
+    -moz-filter: drop-shadow( 2px 2px 2px #777 );
+    filter: drop-shadow( 2px 2px 2px #777 );
+    z-index:1;
+}
