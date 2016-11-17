@@ -22,8 +22,8 @@ USE `microdraw`;
 -- Table structure for table `keyvalue`
 --
 
-DROP TABLE IF EXISTS `keyvalue`;
-CREATE TABLE `keyvalue` (
+DROP TABLE IF EXISTS `KeyValue`;
+CREATE TABLE `KeyValue` (
   `UniqueID` int(11) NOT NULL,
   `myTimestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `myOrigin` text COLLATE utf8_bin NOT NULL,
@@ -56,7 +56,7 @@ CREATE TABLE `users` (
 --
 -- Indexes for table `keyvalue`
 --
-ALTER TABLE `keyvalue`
+ALTER TABLE `KeyValue`
   ADD PRIMARY KEY (`UniqueID`),
   ADD UNIQUE KEY `UniqueID` (`UniqueID`);
 
@@ -73,7 +73,7 @@ ALTER TABLE `users`
 --
 -- AUTO_INCREMENT for table `keyvalue`
 --
-ALTER TABLE `keyvalue`
+ALTER TABLE `KeyValue`
   MODIFY `UniqueID` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `users`

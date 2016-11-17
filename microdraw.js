@@ -1996,8 +1996,9 @@ function initMicrodraw2(obj) {
 
 	// init slider that can be used to change between slides
 	// initSlider(0, obj.tileSources.length, 1, Math.round(obj.tileSources.length / 2));
-	initSlider(0, obj.tileSources.length, 1, 0);
-	currentImage = imageOrder[Math.floor(obj.tileSources.length / 2)];
+	// currentImage = imageOrder[Math.floor(obj.tileSources.length / 2)];
+    initSlider(0, obj.tileSources.length, 1, 0);
+	currentImage = "0";
 
 	params.tileSources = obj.tileSources;
 	viewer = OpenSeadragon({

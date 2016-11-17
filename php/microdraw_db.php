@@ -31,6 +31,7 @@ function save($args)
 {
 	global $connection;
 	global $dbname;
+	global $rootdir;
 
 	header("Access-Control-Allow-Origin: *");
 
@@ -42,7 +43,7 @@ function save($args)
 	$user = (is_string($origin->user) == true) ? $origin->user : $origin->user->IP;
 
 	$value = json_decode($args['value']);
-	$sliceName = str_replace('http://ffuentes.medlab.upv.es/webseg_fran_github/images/', '', $value->Regions[0]->filename);
+	$sliceName = str_replace($_SERVER['DOCUMENT_ROOT'].$rootdir.'/images/', '', $value->Regions[0]->filename);
 
 	$q="INSERT INTO ".$dbname.".KeyValue (myOrigin, myKey, myValue, mySlice, mySliceName, mySource, myUser) VALUES('"
 		.$args["origin"]."','"

@@ -95,6 +95,7 @@ function user_register()
 function user_remind()
 {
 	global $connection;
+	global $dblogin;
 	$flagFound=0;
 
 	$email = mysqli_real_escape_string($connection,$_GET['email+name']);

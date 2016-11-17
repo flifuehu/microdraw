@@ -17,6 +17,21 @@
 #login.loginbox {
 	border:1px solid lightGrey;
 	position:fixed;
+	top:0px;
+	left:0px;
+	background-color:white;
+	padding:20px;
+	max-width:100%;
+	margin-left:0%;
+    width: 100%;
+    height: 100%;
+    line-height:20px;
+	box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.5);
+    z-index:20;
+}
+#old_login.loginbox {
+	border:1px solid lightGrey;
+	position:fixed;
 	top:10px;
 	left:-150px;
 	background-color:white;
@@ -45,7 +60,8 @@
 #login.loginbox #e-mail,
 #login.loginbox #password,
 #login.loginbox #repassword {
-	width:90%;
+	width:300px;
+	margin: 0 auto;
 }
 </style>
 
@@ -54,13 +70,18 @@
 	<a id="user" href="#"></a>
 	(<a id="logout" href="#" onclick="MyLoginWidget.logout()">Log out</a>)
 </span>
-<input id="username" type="text" placeholder="Name"/>
+<span id="pleaseLogIn">
+	<p style="font-size: 30px;">Bienvenid@ a la plataforma de anotación de imágenes de CVBLab</h1>
+	<br><img src="./img/cvblab.svg" style="padding: 20px;"><br>
+	<p>Identifícate o regístrate por favor</p>
+</span>
+<input id="username" type="text" placeholder="Nombre"/>
 <input id="e-mail" type="email" placeholder="E-Mail"/>
-<input id="password" type="password" placeholder="Password"/>
-<input id="repassword" type="password" placeholder="Confirm Password"/>
-<button id="sendLogin" type="submit" onclick="MyLoginWidget.sendLogin()">Send</button>
+<input id="password" type="password" placeholder="Contraseña"/>
+<input id="repassword" type="password" placeholder="Confirma la contraseña"/>
+<button id="sendLogin" type="submit" onclick="MyLoginWidget.sendLogin()">Entrar</button>
 <button id="register" onclick="MyLoginWidget.sendRegister()">Send</button>
-<button id="cancel" onclick="MyLoginWidget.cancel()">Cancel</button>
-<a id="registerLink" href="#" onclick="MyLoginWidget.displayRegisterForm()">Register</a>
-<a id="remind" href="#" onclick="MyLoginWidget.remind()">Forgotten password</a>
+<!-- <button id="cancel" onclick="MyLoginWidget.cancel()">Cancel</button> -->
+<a id="registerLink" href="#" onclick="MyLoginWidget.displayRegisterForm()">Registrar</a>
+<a id="remind" href="#" onclick="MyLoginWidget.remind()">He olvidado la contraseña</a>
 <span id="warning" style="color:red"></span>
