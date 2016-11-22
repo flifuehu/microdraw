@@ -34,11 +34,14 @@
 				<img class="button" id="zoom-in"     title="Acercar"                src="img/plus.svg" />
 				<img class="button" id="zoom-out"    title="Alejar"               src="img/minus.svg" />
 				<div>
-					<input id="slice-name-text" list="slice-names-text" style="width:100%; font-size: small; margin: 5px 0px; left: -5px;" readonly="true"/>
+					<input id="slice-name-text" list="slice-names-text" style="width:100%; font-size: small; margin: 5px 0px; left: -5px; text-align: center;" readonly="true"/>
+				</div>
+				<div style="font-size: small; font-weight: 300;">
+					<input id="annotation-ended" list="annotation-ended" type="checkbox" style="margin: 5px 0px; left: -5px;"/>&nbsp;Anotación finalizada
 				</div>
 				<div>
 					<img class="button" id="prev"    title="Imagen anterior"         src="img/prev.svg" />
-					<input id="slice-name" list="slice-names" style="width:80px" />
+					<input id="slice-name" list="slice-names" style="width:80px; text-align: center;" />
 					<img class="button" id="next"    title="Siguiente imagen"             src="img/next.svg" />
 				</div>
 				<input type="range" id="slider" />
@@ -133,12 +136,16 @@
 <script src="base.js"></script>
 <script src="microdraw.js"></script>
 <script type="text/javascript">
+
 window.addEventListener("beforeunload", function (e) {
   var confirmationMessage = "\o/";
 
-  e.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
-  return confirmationMessage;              // Gecko, WebKit, Chrome <34
+	if(!changesSaved) {
+  	e.returnValue = confirmationMessage;     // Gecko, Trident, Chrome 34+
+  	return confirmationMessage;              // Gecko, WebKit, Chrome <34
+	}
 });
+
 </script>
 </body>
 

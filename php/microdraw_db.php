@@ -41,18 +41,20 @@ function save($args)
 	$slice = $origin->slice;
 	$source = str_replace('images/', '', $origin->source);
 	$user = (is_string($origin->user) == true) ? $origin->user : $origin->user->IP;
+	$finished = (strcmp($args['finished'], 'true') == 0) ? 1 : 0;
 
 	$value = json_decode($args['value']);
-	$sliceName = str_replace($_SERVER['DOCUMENT_ROOT'].$rootdir.'/images/', '', $value->Regions[0]->filename);
-
-	$q="INSERT INTO ".$dbname.".KeyValue (myOrigin, myKey, myValue, mySlice, mySliceName, mySource, myUser) VALUES('"
+	$sliceName = str_replace($_SERVER['DOCUMENT_ROOT'].$rootdir.'/images/', '', $value->filename);
+	$q="INSERT INTO ".$dbname.".KeyValue (myOrigin, myKey, myValue, mySlice, mySliceName, mySource, myUser, finished) VALUES('"
 		.$args["origin"]."','"
 		.$args["key"]."','"
 		.mysqli_real_escape_string($connection,$args["value"])."',"
 		.$slice.",'"
 		.mysqli_real_escape_string($connection,$sliceName)."','"
 		.mysqli_real_escape_string($connection,$source)."','"
-		.mysqli_real_escape_string($connection,$user)."')";
+		.mysqli_real_escape_string($connection,$user)."',"
+		.mysqli_real_escape_string($connection,$finished).")";
+		//die($q);
 	$result = mysqli_query($connection,$q);
 
 	header('Content-Type: application/json');

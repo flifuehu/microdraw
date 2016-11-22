@@ -4,6 +4,7 @@ var Ontology=[
 		{name:"Grado 2"},
 		{name:"Grado 3"},
 		{name:"Grado 4"},
-		{name:"Grado 5"}
+		{name:"Grado 5"},
+		{name:"Colon"}
 	]}
 ];

@@ -28,7 +28,7 @@ var annotationLoadingFlag;      // true when an annotation is being loaded
 var config = {}                 // App configuration object
 var isMac = navigator.platform.match(/Mac/i)?true:false;
 var isIOS = navigator.platform.match(/(iPhone|iPod|iPad)/i)?true:false;
-
+var changesSaved = true;
 /***1
     Region handling functions
 */
@@ -673,6 +673,9 @@ function mouseDown(x,y) {
             // signal that a new region has been created for drawing
             newRegionFlag = true;
 
+						//F161121: to ask for confirmation when closing only if changes have been made
+						changesSaved = false;
+
             commitMouseUndo();
             break;
         }
@@ -697,6 +700,10 @@ function mouseDown(x,y) {
                     // clicked on first point of current path
                     // --> close path and remove drawing flag
                     finishDrawingPolygon(true);
+
+										//F161121: to ask for confirmation when closing only if changes have been made
+										changesSaved = false;
+
                 } else {
                     // add point to region
                     region.path.add(point);
@@ -755,6 +762,8 @@ function mouseDrag(x,y,dx,dy) {
             }
         }
     }
+    //F161121: to ask for confirmation when closing only if changes have been made
+    changesSaved = false;
     paper.view.draw();
 }
 
@@ -1307,8 +1316,9 @@ function microdrawDBSave() {
         var h = hash(JSON.stringify(value.Regions)).toString(16);
         if( debug > 1 )
             console.log("hash:",h,"original hash:",slice.Hash);
+
         // if the slice hash is undefined, this slice has not yet been loaded. do not save anything for this slice
-        if( slice.Hash == undefined || h==slice.Hash ) {
+        if( slice.Hash == undefined || h==slice.Hash && slice.needToSave == false ) {
             if( debug > 1 )
                 console.log("No change, no save");
             value.Hash = h;
@@ -1316,6 +1326,8 @@ function microdrawDBSave() {
         }
         value.Hash = h;
         savedSlices += sl.toString() + " ";
+        //F161122: avoid bug when there are no annotations in slice
+        value.filename = ImageInfo[sl]["source"];
 
         // post data to database
         (function(sl, h) {
@@ -1326,18 +1338,22 @@ function microdrawDBSave() {
             data:{
                 "action":"save",
                 "origin":JSON.stringify({
-                    appName:myOrigin.appName,
-                    slice:  sl,
-                    source: myOrigin.source,
-                    user:   myOrigin.user
+                    appName:	myOrigin.appName,
+                    slice:  	sl,
+                    source:	 	myOrigin.source,
+                    user:   	myOrigin.user
                 }),
                 "key":key,
-                "value":JSON.stringify(value)
+                "value":JSON.stringify(value),
+								"finished":slice.finished
             },
             success: function(data) {
                 console.log("< microdrawDBSave resolve: Successfully saved regions:",ImageInfo[sl].Regions.length,"slice: " + sl.toString(),"response:",data);
                 //update hash
                 ImageInfo[sl].Hash = h;
+								//F161121: to ask for confirmation when closing only if changes have been made
+								changesSaved = true;
+								ImageInfo[sl]["needToSave"] = false;
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.log("< microdrawDBSave resolve: ERROR: " + textStatus + " " + errorThrown,"slice: "+sl.toString());
@@ -1381,18 +1397,27 @@ function microdrawDBLoad() {
 		    return;
 		}
 
-        // if there is no data on the current slice
-        // save hash for the image none the less
-        if( data.length == 0 ) {
-            ImageInfo[currentImage]["Hash"] = hash(JSON.stringify(ImageInfo[currentImage]["Regions"])).toString(16);
-            return;
-        }
+    // if there is no data on the current slice
+    // save hash for the image none the less
+    if( data.length == 0 ) {
+        ImageInfo[currentImage]["Hash"] = hash(JSON.stringify(ImageInfo[currentImage]["Regions"])).toString(16);
+        return;
+    }
 
 		// parse the data and add to the current canvas
 		if( debug ) console.log("[",data,"]");
 
+		//F161121: added checkbox to say if annotation is finished
+		ImageInfo[currentImage]["finished"] = false;
+		ImageInfo[currentImage]["needToSave"] = false;
+
 		obj = JSON.parse(data);
 		if( obj ) {
+
+			//F161121: added checkbox to say if annotation is finished
+			ImageInfo[currentImage]["finished"] = (obj.finished == 1) ? true : false;
+			$("#annotation-ended")[0]['checked'] = ImageInfo[currentImage]["finished"];
+
 			obj = JSON.parse(obj.myValue);
 			for( i = 0; i < obj.Regions.length; i++ ) {
 				var reg = {};
@@ -1404,6 +1429,7 @@ function microdrawDBLoad() {
 				reg.path.importJSON(json);
 				newRegion({name:reg.name,path:reg.path});
 			}
+
 			paper.view.draw();
             // if image has no hash, save one
 			ImageInfo[currentImage]["Hash"] = (obj.Hash ? obj.Hash : hash(JSON.stringify(ImageInfo[currentImage]["Regions"])).toString(16));
@@ -1487,6 +1513,9 @@ function loadImage(name) {
     if( debug ) console.log("> loadImage(" + name + ")");
     // save previous image for some (later) cleanup
     prevImage = currentImage;
+
+		//F161121: added checkbox to say if annotation is finished
+		$("#annotation-ended")[0]['checked'] = false;
 
     // set current image to new image
     currentImage = name;
@@ -1589,6 +1618,9 @@ function initAnnotationOverlay(data) {
     paper.settings.handleSize = 10;
     updateRegionList();
     paper.view.draw();
+
+		//F161121: added checkbox to say if annotation is finished
+		$("#annotation-ended")[0]['checked'] = ImageInfo[currentImage]["finished"];
 
     /* RT: commenting this line out solves the image size issues */
        // set size of the current overlay to match the size of the current image
@@ -1763,8 +1795,8 @@ function initSlider(min_val, max_val, step, default_value) {
 		var sliceName = $("#slice-name-text");
 		if( sliceName.length > 0 ) { // only if slider could be found
         var imagePath = self.ImageInfo[default_value].source;
-        imagePath = (imagePath.split("/"));
-        sliceName.val(imagePath[imagePath.length-1]);
+        imagePath = imagePath.split("/")[imagePath.split("/").length-1].split("_")[0]; //just until the first underscore. Before: (imagePath.split("/"));
+        sliceName.val(imagePath);
 		}
 
 }
@@ -1791,8 +1823,8 @@ function update_slider_value(newIndex) {
     var sliceName = $("#slice-name-text");
     if( sliceName.length > 0 ) { // only if slider could be found
         var imagePath = self.ImageInfo[newIndex].source;
-        imagePath = (imagePath.split("/"));
-        sliceName.val(imagePath[imagePath.length-1]);
+				imagePath = imagePath.split("/")[imagePath.split("/").length-1].split("_")[0]; //just until the first underscore. Before: (imagePath.split("/"));
+        sliceName.val(imagePath);
     }
 }
 
@@ -1958,6 +1990,13 @@ function initMicrodraw() {
     });
 
     appendRegionTagsFromOntology(Ontology);
+
+		//F161121: added checkbox to say if annotation is finished
+		$("#annotation-ended").on("click", function(event) {
+			ImageInfo[currentImage]["finished"] = $("#annotation-ended")[0]['checked'];
+			ImageInfo[currentImage]["needToSave"] = true;
+      changesSaved = false;
+		});
 
     return def.promise();
 }
