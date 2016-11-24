@@ -1407,10 +1407,6 @@ function microdrawDBLoad() {
 		// parse the data and add to the current canvas
 		if( debug ) console.log("[",data,"]");
 
-		//F161121: added checkbox to say if annotation is finished
-		ImageInfo[currentImage]["finished"] = false;
-		ImageInfo[currentImage]["needToSave"] = false;
-
 		obj = JSON.parse(data);
 		if( obj ) {
 
@@ -2016,6 +2012,9 @@ function initMicrodraw2(obj) {
 		var name = ((obj.names && obj.names[i]) ? String(obj.names[i]) : String(i));
 		imageOrder.push(name);
 		ImageInfo[name] = {"source": obj.tileSources[i], "Regions": [], "projectID": undefined};
+		//F161121: added checkbox to say if annotation is finished
+		ImageInfo[name]["finished"] = false;
+		ImageInfo[name]["needToSave"] = false;
 		// if getTileUrl is specified, we might need to eval it to get the function
 		if( obj.tileSources[i].getTileUrl && typeof obj.tileSources[i].getTileUrl === 'string' ) {
 			eval("ImageInfo[name]['source'].getTileUrl = " + obj.tileSources[i].getTileUrl);
